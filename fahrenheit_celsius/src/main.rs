@@ -1,16 +1,22 @@
 use std::io;
 
 fn main() {
-    println!("please input a fahrenheit tempurature.");
+    // intro
+    println!("F -> C calculator");
 
-    let mut temperature = String::new();
+    // input
+    println!("please input a valid temperature in F.");
+
+    let mut input = String::new();
 
     io::stdin()
-        .read_line(&mut temperature)
-        .expect("failed to read line.")
+        .read_line(&mut input)
+        .expect("failed to read input");
 
-    let temperature: u32 = temperature
-        .trim()
-        .parse()
-        .expect("please type a number!")
+    let input: u32 = match input.trim().parse() {
+        Ok(num) => num,
+        Err(_) => println!("{}", error),
+    };
+
+    println!("input: {input}");
 }
