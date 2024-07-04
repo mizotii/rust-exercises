@@ -10,23 +10,24 @@ enum Message {
     ChangeColor(i32, i32, i32),
 }
 
+enum Option<T> {
+    None,
+    Some(T),
+}
+
 impl Message {
     fn call(&self) {
 
     }
 }
 
-let m = Message::Write(String::from("hello"));
-m.call();
-
-let home = IpAddr::V4(127, 0, 0, 1);
-
-let loopback = IpAddr::V6(String::from("::1"));
-
-fn route(ip_kind: IpAddrKind) {
-
-}
-
 fn main() {
-    println!("Hello, world!");
+    let m = Message::Write(String::from("hello"));
+    m.call();
+    
+    let home = IpAddr::V4(127, 0, 0, 1);
+    
+    let loopback = IpAddr::V6(String::from("::1"));
+
+    let absent_number: Option<i32> = None;
 }
