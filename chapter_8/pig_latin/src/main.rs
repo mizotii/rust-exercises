@@ -3,22 +3,22 @@ use std::{error, io};
 use unicode_segmentation::UnicodeSegmentation;
 
 fn main() {
+    let mut input = String::new();
+
     loop {
         println!("text input:");
-
-        let mut input = String::new();
 
         io::stdin()
             .read_line(&mut input)
             .expect("failed to read input");
+    }
 
-        let words = parse_input(&input);
+    let words = parse_input(&input);
 
-        let text_tl = pig_latinize(words);
+    let text_tl = pig_latinize(words);
 
-        for word in text_tl {
-            println!("{word} ");
-        }
+    for word in text_tl {
+        println!("{word} ");
     }
 }
 
@@ -41,7 +41,7 @@ fn pig_latinize(words: Vec<&str>) -> Vec<String> {
                         let mut remainder = word.chars();
                         remainder.next();
                         remainder.as_str();
-                        word_tl = format!("{remainder:?}{first}ay")
+                        word_tl = format!("{remainder:#?}{first}ay")
                     } else {
                         word_tl = format!("{word}hay");
                     },
