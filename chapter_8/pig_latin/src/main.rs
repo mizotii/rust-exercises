@@ -2,6 +2,8 @@ use is_vowel::IsRomanceVowel;
 use std::io;
 
 fn main() {
+    println!("text input:");
+
     let mut input = String::new();
 
     io::stdin()
