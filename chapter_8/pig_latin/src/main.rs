@@ -1,53 +1,35 @@
 use is_vowel::IsRomanceVowel;
-use std::{error, io};
-use unicode_segmentation::UnicodeSegmentation;
+use std::io;
 
 fn main() {
     let mut input = String::new();
 
-    loop {
-        println!("text input:");
+    io::stdin()
+        .read_line(&mut input)
+        .expect("failed to read line");
 
-        io::stdin()
-            .read_line(&mut input)
-            .expect("failed to read input");
-    }
+    let output = translate(&input);
 
-    let words = parse_input(&input);
-
-    let text_tl = pig_latinize(words);
-
-    for word in text_tl {
+    for word in output {
         println!("{word} ");
     }
 }
 
-fn parse_input(input: &str) -> Vec<&str> {
+fn translate(input: &str) -> Vec<String> {
     let mut words = Vec::new();
-    for word in input.split_whitespace() {
-        words.push(word);
+    for mut word in input.split_whitespace() {
+        let mut iter = word.chars();
+        let first = iter.next();
+        match first {
+            Some(first) => 
+                if first.is_romance_vowel() {
+                    words.push(format!("{word}hay"));
+                } else {
+                    let remainder = iter.as_str();
+                    words.push(format!("{remainder}{first}ay"));
+                },
+            _ => (),
+        }
     }
     words
-}
-
-fn pig_latinize(words: Vec<&str>) -> Vec<String> {
-    let mut pig_latin_tl = Vec::new();
-        for word in words {
-            let mut word_tl = String::new();
-            let mut iter_c = word.chars().next();
-            match iter_c {
-                Some(first) => 
-                    if !first.is_romance_vowel() {
-                        let mut remainder = word.chars();
-                        remainder.next();
-                        remainder.as_str();
-                        word_tl = format!("{remainder:#?}{first}ay")
-                    } else {
-                        word_tl = format!("{word}hay");
-                    },
-                _ => (),
-            }
-            pig_latin_tl.push(word_tl);
-        }
-    pig_latin_tl
 }
