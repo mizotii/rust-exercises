@@ -1,7 +1,7 @@
+use std::fs::File;
+
+
 fn main() {
-    let v = vec![1, 2, 3];
-
-    v[99];
-
-    let y: u32;
+    let greeting_file_result = File::open("hello.txt")
+        .expect("hello.txt should be included in this project");
 }

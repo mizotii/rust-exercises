@@ -3,6 +3,9 @@ name = "panic"
 version = "0.1.0"
 edition = "2021"
 
+<<<<<<< HEAD
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+=======
+>>>>>>> e70907455b9c80d9609bf2329162222f8f61a975
 [dependencies]
