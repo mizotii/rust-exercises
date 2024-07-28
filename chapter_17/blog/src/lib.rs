@@ -31,11 +31,8 @@ impl Post {
     }
 
     pub fn approve(&mut self) {
-        self.nominations += 1;
-        if self.nominations == NOMINATIONS {
-            if let Some(s) = self.state.take() {
-                self.state = Some(s.approve())
-            }
+        if let Some(s) = self.state.take() {
+            self.state = Some(s.approve(self))
         }
     }
 
@@ -49,12 +46,14 @@ impl Post {
 trait State {
     // should change the states, which are Box<Self> types
     fn request_review(self: Box<Self>) -> Box<dyn State>;
-    fn approve(self: Box<Self>) -> Box<dyn State>;
+    fn approve<'a>(self: Box<Self>, post: &'a mut Post) -> Box<dyn State>;
     fn reject(self: Box<Self>) -> Box<dyn State>;
     // should return content
     fn content<'a>(&self, post: &'a Post) -> &'a str {
         ""
     }
+    //
+    fn add_text<'a>(self: Box<Self>, post: &'a mut Post, text: &str) -> Box<dyn State>;
 }
 
 struct Draft {}
@@ -63,10 +62,16 @@ impl State for Draft {
     fn request_review(self: Box<Self>) -> Box<dyn State> {
         Box::new(PendingReview {})
     }
-    fn approve(self: Box<Self>) -> Box<dyn State> {
+
+    fn approve<'a>(self: Box<Self>, post: &'a mut Post) -> Box<dyn State> {
         self
     }
+
     fn reject(self: Box<Self>) -> Box<dyn State> {
+        self
+    }
+
+    fn add_text<'a>(self: Box<Self>, post: &'a mut Post, text: &str) -> Box<dyn State> {
         self
     }
 }
@@ -77,11 +82,22 @@ impl State for PendingReview {
     fn request_review(self: Box<Self>) -> Box<dyn State> {
         self
     }
-    fn approve(self: Box<Self>) -> Box<dyn State> {
-        Box::new(Published {})
+
+    fn approve<'a>(self: Box<Self>, post: &'a mut Post) -> Box<dyn State> {
+        post.nominations += 1;
+        if post.nominations == NOMINATIONS {
+            Box::new(Published {})
+        } else {
+            self
+        }
     }
+
     fn reject(self: Box<Self>) -> Box<dyn State> {
         Box::new(Draft {})
+    }
+
+    fn add_text<'a>(self: Box<Self>, post: &'a mut Post, text: &str) -> Box<dyn State> {
+        self
     }
 }
 
@@ -92,14 +108,19 @@ impl State for Published {
         self
     }
 
-    fn approve(self: Box<Self>, post: &Post) -> Box<dyn State> {
+    fn approve<'a>(self: Box<Self>, post: &'a mut Post) -> Box<dyn State> {
         self
     }
 
     fn content<'a>(&self, post: &'a Post) -> &'a str {
         &post.content
     }
+
     fn reject(self: Box<Self>) -> Box<dyn State> {
+        self
+    }
+
+    fn add_text<'a>(self: Box<Self>, post: &'a mut Post, text: &str) -> Box<dyn State> {
         self
     }
 }
